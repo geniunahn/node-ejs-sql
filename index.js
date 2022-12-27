@@ -4,7 +4,9 @@ const ejs = require("ejs");
 const { sequelize, Posts } = require("./database");
 
 // DB 연결
-sequelize.sync();
+sequelize.sync().then(function (res) {
+  console.log("데이터 연결 완료");
+});
 
 // ejs를 view 엔진으로 설정
 app.set("view engine", "ejs");
@@ -13,8 +15,11 @@ app.set("view engine", "ejs");
 app.use(express.static("public"));
 
 // home
-app.get("/", function (요청, 응답) {
-  응답.render("pages/index.ejs");
+app.get("/", async function (req, res) {
+  // db 불러오기
+  const posts = await Posts.findAll();
+  console.log(JSON.stringify(posts, null, 2));
+  res.render("pages/index.ejs", { posts });
 });
 
 // about
